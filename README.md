@@ -89,7 +89,41 @@ pip install pyobjc-framework-Quartz>=8.0 pyobjc-framework-Cocoa>=8.0
 
 ### 4. 准备模板图片
 
-将 QQ 红包的截图放到 `img/redbag.png`，建议截取红包图标的特征区域。
+将 QQ 红包的截图放到 `img/redbag.png`，建议截取红包图标的特征区域。（已经预置一个普通的红包截图）
+
+## GUI（系统托盘应用）
+
+本项目提供一个简约的系统托盘 GUI，用于启动/停止/暂停机器人并实时显示状态。GUI 基于 `pystray` 实现，托盘菜单包含：启动、暂停、继续、停止、退出。
+
+- 启动 GUI（在当前终端中会阻塞，托盘应用运行后可关闭终端）：
+
+```bash
+python -m src.gui
+```
+
+- 托盘图标会根据机器人状态改变（运行中 / 已暂停 / 已停止），并在通过快捷键或菜单操作时同步更新。
+
+## 打包（Briefcase）
+
+项目提供 Briefcase 配置以构建桌面应用（macOS `.app` / Windows 可执行程序）。打包前注意：
+
+- 请使用兼容的 Python 解释器（推荐 `3.10`、`3.11` 或 `3.12`；避免 `3.14`，以免部分依赖无法安装）。
+- 安装 Briefcase（开发机器上）并生成模板：
+
+```bash
+# 安装 briefcase
+pip install briefcase
+
+# 创建 macOS 模板并构建（macOS 主机）
+briefcase create macOS
+briefcase build macOS
+
+# 创建 Windows 模板并构建（在 Windows 主机或交叉构建环境）
+briefcase create windows
+briefcase build windows
+```
+
+注意：macOS 上打包/运行时可能涉及代码签名与 Gatekeeper 策略；若收到“应用已损坏或不完整”的提示，通常是因为应用未完整生成或未签名，建议先在兼容的 Python 版本下重新构建。
 
 ## 使用方法
 
