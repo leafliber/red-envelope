@@ -9,7 +9,7 @@ import sys
 import threading
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Callable, Dict, Optional
 
 import yaml
 from pynput import keyboard
@@ -101,7 +101,11 @@ class RedEnvelopeBot:
     主控制器，协调窗口扫描 → 图像识别 → 自动点击的完整流程。
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(
+        self,
+        config: Optional[Dict[str, Any]] = None,
+        on_pause_change: Optional[Callable[[bool], None]] = None,
+    ) -> None:
         """初始化红包机器人.
 
         Args:
@@ -110,6 +114,7 @@ class RedEnvelopeBot:
         if config is None:
             config = load_config()
         self.config = config
+        self._on_pause_change = on_pause_change
         self._running = False
         self._paused = False
         self._hotkey_listener = None
@@ -266,11 +271,28 @@ class RedEnvelopeBot:
 
         return False
 
-    def _toggle_pause(self) -> None:
-        """切换暂停/继续状态."""
-        self._paused = not self._paused
+    def _notify_pause_change(self) -> None:
+        """通知暂停状态变化给外部（如 GUI 控制器）."""
+        if self._on_pause_change is None:
+            return
+        try:
+            self._on_pause_change(self._paused)
+        except Exception as e:
+            logger.warning("暂停状态回调失败: %s", e)
+
+    def set_paused(self, paused: bool) -> None:
+        """设置暂停状态并触发通知."""
+        if self._paused == paused:
+            return
+
+        self._paused = paused
         state = "已暂停" if self._paused else "已继续"
         logger.info("监控状态切换: %s (快捷键: %s)", state, self._pause_hotkey)
+        self._notify_pause_change()
+
+    def _toggle_pause(self) -> None:
+        """切换暂停/继续状态."""
+        self.set_paused(not self._paused)
 
     def _start_hotkey_listener(self) -> None:
         """启动全局快捷键监听."""
@@ -321,6 +343,7 @@ class RedEnvelopeBot:
         """
         self._running = True
         self._paused = False
+        self._notify_pause_change()
 
         # 注册信号处理（仅主线程可注册信号）
         def _signal_handler(signum, frame):

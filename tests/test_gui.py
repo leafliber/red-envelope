@@ -122,8 +122,7 @@ class TestGUIControllerPauseResume:
         ctrl._state = BotState.RUNNING
         ctrl._bot = MagicMock()
         ctrl.pause()
-        assert ctrl.state == BotState.PAUSED
-        assert ctrl._bot._paused is True
+        ctrl._bot.set_paused.assert_called_once_with(True)
 
     def test_pause_ignored_if_not_running(self):
         ctrl = GUIController()
@@ -136,8 +135,7 @@ class TestGUIControllerPauseResume:
         ctrl._state = BotState.PAUSED
         ctrl._bot = MagicMock()
         ctrl.resume()
-        assert ctrl.state == BotState.RUNNING
-        assert ctrl._bot._paused is False
+        ctrl._bot.set_paused.assert_called_once_with(False)
 
     def test_resume_ignored_if_not_paused(self):
         ctrl = GUIController()
@@ -146,6 +144,31 @@ class TestGUIControllerPauseResume:
         ctrl.resume()
         # State should not change
         assert ctrl.state == BotState.RUNNING
+
+
+class TestGUIControllerHotkeySync:
+    """测试快捷键触发的暂停状态同步."""
+
+    def test_hotkey_pause_updates_state(self):
+        ctrl = GUIController()
+        ctrl._state = BotState.RUNNING
+
+        ctrl._handle_bot_pause_change(True)
+        assert ctrl.state == BotState.PAUSED
+
+    def test_hotkey_resume_updates_state(self):
+        ctrl = GUIController()
+        ctrl._state = BotState.PAUSED
+
+        ctrl._handle_bot_pause_change(False)
+        assert ctrl.state == BotState.RUNNING
+
+    def test_hotkey_change_ignored_when_stopped(self):
+        ctrl = GUIController()
+        ctrl._state = BotState.STOPPED
+
+        ctrl._handle_bot_pause_change(True)
+        assert ctrl.state == BotState.STOPPED
 
 
 # ─── 图标生成测试 ─────────────────────────────────────────────

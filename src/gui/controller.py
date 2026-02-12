@@ -50,6 +50,13 @@ class GUIController:
             except Exception as e:
                 logger.error("状态回调执行失败: %s", e)
 
+    def _handle_bot_pause_change(self, paused: bool) -> None:
+        """处理机器人暂停状态变化（包括快捷键触发）."""
+        with self._lock:
+            if self._state == BotState.STOPPED:
+                return
+            self._set_state(BotState.PAUSED if paused else BotState.RUNNING)
+
     def start(self) -> None:
         """启动机器人（后台线程）."""
         with self._lock:
@@ -62,7 +69,10 @@ class GUIController:
 
                 config = load_config()
                 setup_logging(config)
-                self._bot = RedEnvelopeBot(config)
+                self._bot = RedEnvelopeBot(
+                    config,
+                    on_pause_change=self._handle_bot_pause_change,
+                )
                 self._thread = threading.Thread(
                     target=self._run_bot, name="bot-worker", daemon=True
                 )
@@ -97,14 +107,12 @@ class GUIController:
         """暂停机器人."""
         with self._lock:
             if self._bot and self._state == BotState.RUNNING:
-                self._bot._paused = True
-                self._set_state(BotState.PAUSED)
+                self._bot.set_paused(True)
                 logger.info("机器人已通过 GUI 暂停")
 
     def resume(self) -> None:
         """继续运行机器人."""
         with self._lock:
             if self._bot and self._state == BotState.PAUSED:
-                self._bot._paused = False
-                self._set_state(BotState.RUNNING)
+                self._bot.set_paused(False)
                 logger.info("机器人已通过 GUI 继续运行")
