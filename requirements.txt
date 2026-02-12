@@ -5,6 +5,10 @@ PyAutoGUI>=0.9.53
 PyYAML>=5.4
 pynput>=1.7.6
 
+# GUI 依赖
+pystray>=0.19.0
+Pillow>=9.0
+
 # Windows 平台依赖（仅 Windows 需要）
 # pip install pywin32>=300
 
@@ -15,3 +19,6 @@ pynput>=1.7.6
 # 开发/测试依赖
 pytest>=7.0
 pytest-cov>=4.0
+
+# 打包工具（开发时安装）
+# pip install briefcase>=0.3.17

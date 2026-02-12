@@ -322,13 +322,17 @@ class RedEnvelopeBot:
         self._running = True
         self._paused = False
 
-        # 注册信号处理
+        # 注册信号处理（仅主线程可注册信号）
         def _signal_handler(signum, frame):
             logger.info("收到中断信号 (%s)，正在停止...", signal.Signals(signum).name)
             self._running = False
 
-        signal.signal(signal.SIGINT, _signal_handler)
-        signal.signal(signal.SIGTERM, _signal_handler)
+        try:
+            signal.signal(signal.SIGINT, _signal_handler)
+            signal.signal(signal.SIGTERM, _signal_handler)
+        except ValueError:
+            # 在非主线程中运行时（如 GUI 模式），跳过信号注册
+            logger.debug("信号处理跳过（非主线程）")
 
         # 启动全局快捷键监听
         self._start_hotkey_listener()

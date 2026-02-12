@@ -1,0 +1,84 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "red-envelope-qq"
+version = "1.0.0"
+description = "QQ红包自动点击工具 - 通过图像识别自动检测并点击QQ红包"
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+license = {text = "MIT"}
+dependencies = [
+    "opencv-python>=4.5.0",
+    "numpy>=1.19.0",
+    "PyAutoGUI>=0.9.53",
+    "PyYAML>=5.4",
+    "pynput>=1.7.6",
+    "pystray>=0.19.0",
+    "Pillow>=9.0",
+]
+
+[project.optional-dependencies]
+macos = [
+    "pyobjc-framework-Quartz>=8.0",
+    "pyobjc-framework-Cocoa>=8.0",
+]
+windows = [
+    "pywin32>=300",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "briefcase>=0.3.17",
+]
+
+[project.scripts]
+red-envelope-cli = "src.__main__:_main"
+red-envelope-gui = "src.gui.tray:main"
+
+# ─── Briefcase 打包配置 ────────────────────────────────────────
+
+[tool.briefcase]
+project_name = "QQ红包助手"
+bundle = "com.redenvelope.qq"
+version = "1.0.0"
+url = "https://github.com/red-envelope-qq"
+license.file = "LICENSE"
+author = "red-envelope-qq"
+
+[tool.briefcase.app.src]
+formal_name = "QQ红包助手"
+description = "QQ红包自动点击桌面应用"
+icon = "src/gui/resources/icon"
+sources = ["src"]
+requires = [
+    "opencv-python>=4.5.0",
+    "numpy>=1.19.0",
+    "PyAutoGUI>=0.9.53",
+    "PyYAML>=5.4",
+    "pynput>=1.7.6",
+    "pystray>=0.19.0",
+    "Pillow>=9.0",
+]
+startup_module = "src.gui"
+
+[tool.briefcase.app.src.macOS]
+requires = [
+    "pyobjc-framework-Quartz>=8.0",
+    "pyobjc-framework-Cocoa>=8.0",
+]
+
+[tool.briefcase.app.src.windows]
+requires = [
+    "pywin32>=300",
+]
+
+# ─── 工具配置 ──────────────────────────────────────────────────
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.setuptools.packages.find]
+include = ["src*"]
