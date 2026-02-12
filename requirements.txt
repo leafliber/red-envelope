@@ -1,0 +1,17 @@
+# 核心依赖
+opencv-python>=4.5.0
+numpy>=1.19.0
+PyAutoGUI>=0.9.53
+PyYAML>=5.4
+pynput>=1.7.6
+
+# Windows 平台依赖（仅 Windows 需要）
+# pip install pywin32>=300
+
+# macOS 平台依赖（仅 macOS 需要）
+# pip install pyobjc-framework-Quartz>=8.0
+# pip install pyobjc-framework-Cocoa>=8.0
+
+# 开发/测试依赖
+pytest>=7.0
+pytest-cov>=4.0
