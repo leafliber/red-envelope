@@ -21,8 +21,9 @@ def generate_app_icon(output_dir: Path) -> None:
         draw = ImageDraw.Draw(img)
 
         margin = max(1, size // 16)
-        body_top = int(size * 0.25)
-        body_bottom = size - margin
+        envelope_height = int(size * 0.68)
+        body_top = (size - envelope_height) // 2
+        body_bottom = body_top + envelope_height
         radius = max(1, size // 16)
 
         body_color = (220, 53, 69)
@@ -36,14 +37,14 @@ def generate_app_icon(output_dir: Path) -> None:
             fill=body_color,
         )
         # 信封盖子
-        flap_peak = int(size * 0.55)
+        flap_peak = body_top + int(envelope_height * 0.45)
         draw.polygon(
             [(margin, body_top), (size // 2, flap_peak), (size - margin, body_top)],
             fill=flap_color,
         )
         # 金币
         coin_r = max(1, int(size * 0.12))
-        cx, cy = size // 2, int(size * 0.55)
+        cx, cy = size // 2, body_top + int(envelope_height * 0.45)
         draw.ellipse(
             [cx - coin_r, cy - coin_r, cx + coin_r, cy + coin_r],
             fill=coin_color,
