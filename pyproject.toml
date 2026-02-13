@@ -1,13 +1,13 @@
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "red-envelope-qq"
 version = "1.0.0"
 description = "QQ红包自动点击工具 - 通过图像识别自动检测并点击QQ红包"
 readme = "README.md"
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.10"
 license = {text = "MIT"}
 dependencies = [
     "opencv-python>=4.5.0",
@@ -52,6 +52,7 @@ formal_name = "QQ红包助手"
 description = "QQ红包自动点击桌面应用"
 icon = "src/gui/resources/icon"
 sources = ["src"]
+requirement_installer_args = ["--find-links", "wheelhouse"]
 requires = [
     "opencv-python>=4.5.0",
     "numpy>=1.19.0",
@@ -64,6 +65,7 @@ requires = [
 startup_module = "src.gui"
 
 [tool.briefcase.app.src.macOS]
+universal_build = false
 requires = [
     "pyobjc-framework-Quartz>=8.0",
     "pyobjc-framework-Cocoa>=8.0",
