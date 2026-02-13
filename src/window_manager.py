@@ -63,7 +63,7 @@ class WindowManager:
             ]
             self._window_cache = valid_windows
             self._cache_timestamp = time.time()
-            logger.info(
+            logger.debug(
                 "窗口扫描完成，发现 %d 个有效QQ窗口", len(valid_windows)
             )
             return valid_windows
