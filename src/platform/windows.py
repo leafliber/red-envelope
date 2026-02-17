@@ -94,6 +94,11 @@ class WindowsPlatform(PlatformWindow):
             logger.warning("窗口句柄 %d 无效，跳过截图", hwnd)
             return None
 
+        hwnd_dc = None
+        mfc_dc = None
+        save_dc = None
+        bitmap = None
+
         try:
             # 获取窗口实际尺寸
             rect = win32gui.GetWindowRect(hwnd)
@@ -136,18 +141,34 @@ class WindowsPlatform(PlatformWindow):
             # BGRA -> BGR
             img = img[:, :, :3]
 
-            # 清理资源
-            save_dc.DeleteDC()
-            mfc_dc.DeleteDC()
-            win32gui.ReleaseDC(hwnd, hwnd_dc)
-            win32gui.DeleteObject(bitmap.GetHandle())
-
             logger.debug("成功截取窗口 '%s' (%dx%d)", window.title, width, height)
             return img.copy()
 
         except Exception as e:
             logger.error("截取窗口 '%s' 失败: %s", window.title, e)
             return None
+        finally:
+            # 无论成功或失败都必须释放 GDI 资源，防止句柄/内存泄漏
+            try:
+                if save_dc is not None:
+                    save_dc.DeleteDC()
+            except Exception:
+                pass
+            try:
+                if mfc_dc is not None:
+                    mfc_dc.DeleteDC()
+            except Exception:
+                pass
+            try:
+                if hwnd_dc is not None:
+                    win32gui.ReleaseDC(hwnd, hwnd_dc)
+            except Exception:
+                pass
+            try:
+                if bitmap is not None:
+                    win32gui.DeleteObject(bitmap.GetHandle())
+            except Exception:
+                pass
 
     def activate_window(self, window: WindowInfo) -> bool:
         """将窗口激活并置顶."""

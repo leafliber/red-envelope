@@ -6,8 +6,8 @@ window:
   title_keywords:
     - "QQ"
   # 窗口扫描间隔范围（秒），每轮随机取值
-  scan_interval_min: 1.0
-  scan_interval_max: 3.0
+  scan_interval_min: 0.3
+  scan_interval_max: 1.5
   # 窗口列表缓存刷新间隔（秒）
   cache_ttl: 5.0
 
@@ -16,7 +16,7 @@ detection:
   # 红包模板图片路径（相对于项目根目录）
   template_path: "img/redbag.png"
   # 模板匹配阈值（0.0 - 1.0），越高越严格
-  match_threshold: 0.8
+  match_threshold: 0.7
   # 匹配算法: TM_CCOEFF_NORMED (推荐), TM_CCORR_NORMED, TM_SQDIFF_NORMED
   match_method: "TM_CCOEFF_NORMED"
   # 是否启用灰度匹配（提升速度）
@@ -31,11 +31,11 @@ humanizer:
   click_offset_x: 5
   click_offset_y: 5
   # 点击后等待时间范围（秒）
-  click_wait_min: 0.1
-  click_wait_max: 0.3
+  click_wait_min: 0.2
+  click_wait_max: 0.5
   # 操作间随机等待时间范围（秒）
   action_wait_min: 0.3
-  action_wait_max: 0.8
+  action_wait_max: 0.6
   # PyAutoGUI tween 函数: easeInOutQuad, easeOutQuad, linear
   tween_function: "easeOutQuad"
 
